@@ -34,6 +34,7 @@ typedef struct {
     LineList *lines; /* lines list               */
     Line     *cl;    /* current line             */
     size_t   cp;     /* current position in line */
+    int      execute_on_exit; /* 1 or 0 */
 } State;
 
 typedef enum {
@@ -213,9 +214,8 @@ draw_screen()
                 "|               Editor                |",
                 "|-------------------------------------|",
                 "|  <esc>  close this menu             |",
-                "|  y      execute commands end exit   |",
+                "|  y      exit and exicute commands   |",
                 "|  n      exit without execution      |",
-                "|  e      execute commands            |",
                 "'-------------------------------------'",
             };
 
@@ -337,13 +337,9 @@ handle_events()
                     g_state.m = MODE_EDIT;
                     break;
 
-                case 'e': /* fallthrough */
-                case 'E':
-                    g_state.m = MODE_EDIT;
-                    break;
-
                 case 'y': /* fallthrough */
                 case 'Y':
+                    g_state.execute_on_exit = 1;
                     return g_err = ERR_GOOD;
 
                 case 'n': /* fallthrough */
@@ -566,6 +562,23 @@ handle_events()
 }
 
 static void
+state_init()
+{
+    g_state.m               = MODE_EDIT;
+    g_state.lines           = linelist_create();
+    linelist_append(g_state.lines, "");
+    g_state.cl              = g_state.lines->head;
+    g_state.cp              = 0;
+    g_state.execute_on_exit = 0;
+}
+
+static void
+state_cleanup()
+{
+    linelist_free(g_state.lines);
+}
+
+static void
 print_err()
 {
     switch(g_err) {
@@ -577,6 +590,7 @@ print_err()
 static void
 tui_loop()
 {
+
     /* init termbox */
     tb_init();
 
@@ -591,22 +605,30 @@ tui_loop()
     tb_shutdown();
 }
 
+static int
+execute_commands()
+{
+    FILE *bash;
+
+    if (!(bash = popen("bash", "w")))
+        die("open bash error\n");
+
+    linelist_print(g_state.lines, bash);
+    return pclose(bash);
+}
+
 int
 main()
 {
-    g_state.m     = MODE_EDIT;
-    g_state.lines = linelist_create();
-    linelist_append(g_state.lines, "");
-    g_state.cl = g_state.lines->head;
-    g_state.cp = 0;
+    state_init();
 
     tui_loop();
 
-    linelist_print(g_state.lines, stdout);
-
-    /* cleanup */
-    linelist_free(g_state.lines);
+    if (g_state.execute_on_exit)
+        execute_commands();
 
     print_err();
+
+    state_cleanup();
     return 0;
 }
