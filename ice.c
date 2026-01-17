@@ -213,9 +213,9 @@ draw_screen()
                 "|               Editor                |",
                 "|-------------------------------------|",
                 "|  <esc>  close this menu             |",
-                "|  e      execute commands            |",
                 "|  y      execute commands end exit   |",
                 "|  n      exit without execution      |",
+                "|  e      execute commands            |",
                 "'-------------------------------------'",
             };
 
@@ -300,13 +300,7 @@ draw_screen()
 static int
 valid_char(int ch)
 {
-    return ((ch >= 'A' && ch <= 'Z') ||
-            (ch >= 'a' && ch <= 'z') ||
-            (ch >= '0' && ch <= '9') ||
-            ch == '.' || ch == '-' ||
-            ch == '_' || ch == '/' ||
-            ch == ' '
-           );
+    return ch >= 32 && ch <= 126;
 }
 
 static int
