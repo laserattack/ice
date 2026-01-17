@@ -6,8 +6,8 @@ CFLAGS       = -Wall -Wextra -std=c99
 VALGRIND     = valgrind
 VFLAGS       = --leak-check=full --show-leak-kinds=all --track-origins=yes
 
-TARGET       = tits
-SOURCES      = tits.c utils.c
+TARGET       = ice
+SOURCES      = ice.c utils.c
 OBJECTS      = $(SOURCES:.c=.o)
 DEPS         = $(SOURCES:.c=.d)
 
