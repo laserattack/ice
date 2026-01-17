@@ -2,7 +2,7 @@
 
 ICE - Interactive Command Editor
 
-[![asciicast](https://asciinema.org/a/6gjIphrp1fJROdcY.svg)](https://asciinema.org/a/6gjIphrp1fJROdcY)
+![demo](https://raw.githubusercontent.com/laserattack/ice/main/resources/demo.gif)
 
 # Usage
 
