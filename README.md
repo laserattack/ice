@@ -40,3 +40,7 @@ edit mode controls:
     backspace                delete left symbol
     any printable ascii      insert character
 ```
+
+# Deps
+
+- termbox2
