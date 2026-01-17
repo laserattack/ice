@@ -1,0 +1,7 @@
+vera*
+!vera.c
+*.old
+*.d
+*.td
+*.o
+*.to

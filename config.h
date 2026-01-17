@@ -1,0 +1,18 @@
+#ifndef CONFIG_H
+#define CONFIG_H
+
+/*
+TB_DEFAULT
+TB_BLACK
+TB_RED
+TB_GREEN
+TB_YELLOW
+TB_BLUE
+TB_MAGENTA
+TB_CYAN
+TB_WHITE
+*/
+#define ACCENT_COLOR TB_WHITE /* from termbox */
+#define TAB_WIDTH    4
+
+#endif
