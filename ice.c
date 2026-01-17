@@ -303,32 +303,17 @@ handle_events()
             /* move line */
             case TB_KEY_ENTER:
                 {
-                    size_t newpos;
-                    Line   *curline, *newline;
-                    char   *newline_buf, *after_cursor;
+                    Line *cur          = g_state.cl;
+                    char *after_cursor = &cur->buf[g_state.cp];
+                    Line *newline      = linelist_insert_after(
+                            g_state.lines,
+                            cur,
+                            after_cursor);
 
-                    curline      = g_state.cl;
-                    newpos       = strspn(curline->buf, " ");
-                    after_cursor = &curline->buf[g_state.cp];
-
-                    if (asprintf(&newline_buf,
-                            "%.*s%s",
-                            (int)newpos,
-                            curline->buf,
-                            after_cursor) == -1)
-                        die("line buf alloc err\n");
-
-                    newline = linelist_insert_after(g_state.lines,
-                            curline,
-                            newline_buf);
-
-                    free(newline_buf);
-
-                    curline->buf[g_state.cp] = 0;
-                    curline->len             = g_state.cp;
-
-                    g_state.cl = newline;
-                    g_state.cp = newpos;
+                    cur->buf[g_state.cp] = 0;
+                    cur->len             = g_state.cp;
+                    g_state.cl           = newline;
+                    g_state.cp           = 0;
 
                     break;
                 }
