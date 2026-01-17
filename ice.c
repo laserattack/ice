@@ -5,8 +5,12 @@
 #include <string.h>
 #include <stdlib.h>
 
+char *argv0;
+
 #define TB_IMPL
 #include "thirdparty/termbox2.h"
+
+#include "thirdparty/arg.h"
 
 #include "config.h"
 #include "common.h"
@@ -25,12 +29,7 @@ typedef struct {
     int      execute_on_exit; /* 1 or 0 */
 } State;
 
-typedef enum {
-    ERR_GOOD = -228,
-} Error;
-
 static State g_state = {};
-static Error g_err   = 0;
 
 static void
 state_init()
@@ -162,11 +161,11 @@ handle_events()
         switch(ev.key) {
         case TB_KEY_CTRL_C: /* fallthrough */
         case KEY_EXIT:
-            return g_err = ERR_GOOD;
+            return 1;
 
         case KEY_EXIT_EXECUTE:
             g_state.execute_on_exit = 1;
-            return g_err = ERR_GOOD;
+            return 1;
         }
     }
 
@@ -191,11 +190,11 @@ handle_events()
                 case 'y': /* fallthrough */
                 case 'Y':
                     g_state.execute_on_exit = 1;
-                    return g_err = ERR_GOOD;
+                    return 1;
 
                 case 'n': /* fallthrough */
                 case 'N':
-                    return g_err = ERR_GOOD;
+                    return 1;
                 }
             }
         }
@@ -398,15 +397,6 @@ handle_events()
 }
 
 static void
-print_err()
-{
-    switch(g_err) {
-    case ERR_GOOD:
-        break;
-    }
-}
-
-static void
 tui_loop()
 {
     /* init termbox */
@@ -435,30 +425,41 @@ execute_commands()
     return pclose(sh);
 }
 
-/* TODO:
- * -h flag (see description)
- * show exit code flag
- * print commands flag
- * */
-
-/* TODO:
- * bc
- * */
 int
-main()
+main(int argc, char *argv[])
 {
     int exitcode = 0;
+    
+    int flag_show_exitcode  = 0;
+    int flag_print_commands = 0;
+
+    ARGBEGIN {
+        case 'h':
+            die(g_usage);
+            break;
+        case 'e':
+            flag_show_exitcode = 1;
+            break;
+        case 'c':
+            flag_print_commands = 1;
+            break;
+        default:
+            printf(g_usage);
+            die("\nunknown flag '%c'\n", ARGC());
+    } ARGEND;
 
     state_init();
 
     tui_loop();
 
+    if (flag_print_commands)
+        linelist_print(g_state.lines, stdout);
+
     if (g_state.execute_on_exit)
         exitcode = execute_commands();
 
-    print_err();
-
-    UNUSED(exitcode);
+    if (flag_show_exitcode)
+        printf("exitcode %d\n", exitcode);
 
     state_cleanup();
     return 0;
