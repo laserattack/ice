@@ -137,7 +137,7 @@ draw_screen()
     /* print msgline */
     for (x = 0; x < tw; ++x)
         tb_set_cell(x, th-1, ' ', TB_DEFAULT, TB_DEFAULT);
-    tb_printf(0, th-1, TB_BLACK, ACCENT_COLOR, HELP_TEXT);
+    tb_printf(0, th-1, ACCENT_COLOR, TB_DEFAULT, HELP_TEXT);
 
     /* draw screen */
     tb_present();
