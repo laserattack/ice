@@ -18,10 +18,10 @@ typedef enum {
 } Mode;
 
 typedef struct {
-    Mode     m;      /* current app mode         */
-    LineList *lines; /* lines list               */
-    Line     *cl;    /* current line             */
-    size_t   cp;     /* current position in line */
+    Mode     m;               /* current app mode         */
+    LineList *lines;          /* lines list               */
+    Line     *cl;             /* current line             */
+    size_t   cp;              /* current position in line */
     int      execute_on_exit; /* 1 or 0 */
 } State;
 
