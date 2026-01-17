@@ -1,6 +1,6 @@
 # Wtf?
 
-ICE - Interactive Command Editor
+**ICE** - Interactive Command Editor
 
 ![demo](https://raw.githubusercontent.com/laserattack/ice/main/resources/demo.gif)
 
@@ -42,6 +42,10 @@ edit mode controls:
     backspace                delete left symbol
     any printable ascii      insert character
 ```
+
+# Build
+
+run `make` in repo root
 
 # Deps
 
