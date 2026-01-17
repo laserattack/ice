@@ -418,7 +418,6 @@ print_err()
 static void
 tui_loop()
 {
-
     /* init termbox */
     tb_init();
 
