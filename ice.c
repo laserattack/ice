@@ -70,9 +70,9 @@ draw_screen()
                 "|         Interactive Commands         |",
                 "|                Editor                |",
                 "|--------------------------------------|",
-                "|  esc/ctrl+3  close this menu         |",
-                "|  y           exit and execute        |",
-                "|  n           exit without execution  |",
+                "|  esc/q/ctrl+3  close this menu       |",
+                "|  y             exit & execute        |",
+                "|  n             exit                  |",
                 "'--------------------------------------'",
             };
 
