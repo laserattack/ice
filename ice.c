@@ -65,32 +65,22 @@ draw_screen()
     case MODE_MENU:
         {
             size_t i, lc;
-            char   *menu[] = {
-                ".--------------------------------------.",
-                "|         Interactive Commands         |",
-                "|                Editor                |",
-                "|--------------------------------------|",
-                "|  esc/q  close this menu              |",
-                "|  y      exit & execute               |",
-                "|  n      exit                         |",
-                "'--------------------------------------'",
-            };
 
-            lc = sizeof(menu)/sizeof(*menu);
+            lc = sizeof(g_menu)/sizeof(*g_menu);
             for (i=0; i<lc; ++i) {
                 size_t j;
-                size_t strl   = strlen(menu[i]);
+                size_t strl   = strlen(g_menu[i]);
                 size_t starty = (th-lc) / 2 + i;
                 size_t startx = tw / 2 - strl / 2;
 
                 for (j=0; j<strl; ++j) {
-                    char s = menu[i][j];
+                    char s = g_menu[i][j];
                     uintattr_t color = (s == 'I' || s == 'C' || s == 'E')
                         ? ACCENT_COLOR
                         : TB_DEFAULT;
 
                     tb_set_cell(startx+j, starty,
-                            menu[i][j], color, TB_DEFAULT);
+                            g_menu[i][j], color, TB_DEFAULT);
                 }
             }
 
@@ -171,12 +161,10 @@ handle_events()
     case TB_EVENT_KEY:
         switch(ev.key) {
         case TB_KEY_CTRL_C: /* fallthrough */
-        case TB_KEY_CTRL_Q: /* fallthrough */
-        case TB_KEY_CTRL_X: /* fallthrough */
-        case TB_KEY_CTRL_D:
+        case KEY_EXIT:
             return g_err = ERR_GOOD;
 
-        case TB_KEY_CTRL_S:
+        case KEY_EXIT_EXECUTE:
             g_state.execute_on_exit = 1;
             return g_err = ERR_GOOD;
         }
@@ -188,7 +176,7 @@ handle_events()
         case TB_EVENT_KEY:
             switch (ev.key) {
             /* toggle menu */
-            case TB_KEY_ESC:
+            case KEY_MENU_TOGGLE:
                 g_state.m = MODE_EDIT;
                 break;
 
@@ -221,7 +209,7 @@ handle_events()
         case TB_EVENT_KEY:
             switch (ev.key) {
             /* toggle menu */
-            case TB_KEY_ESC:
+            case KEY_MENU_TOGGLE:
                 g_state.m = MODE_MENU;
                 break;
 
