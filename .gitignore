@@ -1,7 +1,4 @@
-vera*
-!vera.c
-*.old
+tits*
+!tits.c
 *.d
-*.td
 *.o
-*.to
