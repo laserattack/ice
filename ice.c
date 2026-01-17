@@ -70,9 +70,9 @@ draw_screen()
                 "|         Interactive Commands         |",
                 "|                Editor                |",
                 "|--------------------------------------|",
-                "|  esc/q/ctrl+3  close this menu       |",
-                "|  y             exit & execute        |",
-                "|  n             exit                  |",
+                "|  esc/q  close this menu              |",
+                "|  y      exit & execute               |",
+                "|  n      exit                         |",
                 "'--------------------------------------'",
             };
 
@@ -147,8 +147,7 @@ draw_screen()
     /* print msgline */
     for (x = 0; x < tw; ++x)
         tb_set_cell(x, th-1, ' ', TB_DEFAULT, TB_DEFAULT);
-    tb_printf(0, th-1, TB_BLACK, ACCENT_COLOR,
-            "Esc/Ctrl+3: menu, Run with flag -h: help");
+    tb_printf(0, th-1, TB_BLACK, ACCENT_COLOR, HELP_TEXT);
 
     /* draw screen */
     tb_present();
@@ -175,6 +174,10 @@ handle_events()
         case TB_KEY_CTRL_Q: /* fallthrough */
         case TB_KEY_CTRL_X: /* fallthrough */
         case TB_KEY_CTRL_D:
+            return g_err = ERR_GOOD;
+
+        case TB_KEY_CTRL_S:
+            g_state.execute_on_exit = 1;
             return g_err = ERR_GOOD;
         }
     }

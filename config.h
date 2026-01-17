@@ -16,4 +16,6 @@ TB_WHITE
 
 #define SHELL_COMMAND "sh"
 
+#define HELP_TEXT     "Ctrl+Q: exit | Ctrl+S: exec & exit | Esc/Ctrl+3: menu"
+
 #endif
