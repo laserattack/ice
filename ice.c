@@ -206,18 +206,34 @@ draw_screen()
     switch (g_state.m) {
     case MODE_MENU:
         {
-            size_t i;
-            char   *menu[] = {
-                "Press E to execute",
-                "Press Y to exit and execute",
-                "Press N to exit"
+            size_t i, lc;
+            char *menu[] = {
+                ".-------------------------------------.",
+                "|         Interactive Command         |",
+                "|               Editor                |",
+                "|-------------------------------------|",
+                "|  e  execute commands                |",
+                "|  y  save & execute                  |",
+                "|  n  exit without execution          |",
+                "'-------------------------------------'",
             };
 
-            for (i=0; i<sizeof(menu)/sizeof(*menu); ++i) {
-                size_t startx = tw / 2 - strlen(menu[i]) / 2;
-                size_t starty = (th-1) / 2 + i; /* th-1 considering msgline */
+            lc = sizeof(menu)/sizeof(*menu);
+            for (i=0; i<lc; ++i) {
+                size_t j;
+                size_t strl   = strlen(menu[i]);
+                size_t starty = (th-lc) / 2 + i;
+                size_t startx = tw / 2 - strl / 2;
 
-                tb_printf(startx, starty, TB_DEFAULT, TB_DEFAULT, menu[i]);
+                for (j=0; j<strl; ++j) {
+                    char s = menu[i][j];
+                    uintattr_t color = (s == 'I' || s == 'C' || s == 'E')
+                        ? ACCENT_COLOR
+                        : TB_DEFAULT;
+
+                    tb_set_cell(startx+j, starty,
+                            menu[i][j], color, TB_DEFAULT);
+                }
             }
 
             break;
