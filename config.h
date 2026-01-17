@@ -2,7 +2,6 @@
 #define CONFIG_H
 
 /*
-TB_DEFAULT
 TB_BLACK
 TB_RED
 TB_GREEN

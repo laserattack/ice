@@ -208,8 +208,8 @@ draw_screen()
         {
             size_t i;
             char   *menu[] = {
-                "Press S to create directory",
-                "Press Y to create directory and exit",
+                "Press E to execute",
+                "Press Y to exit and execute",
                 "Press N to exit"
             };
 
@@ -325,8 +325,8 @@ handle_events()
                     g_state.m = MODE_EDIT;
                     break;
 
-                case 's': /* fallthrough */
-                case 'S':
+                case 'e': /* fallthrough */
+                case 'E':
                     g_state.m = MODE_EDIT;
                     break;
 
