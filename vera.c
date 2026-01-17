@@ -9,23 +9,7 @@
 #include "termbox2.h"
 
 #include "config.h"
-
-/* start: help macro & funcs */
-
-#define UNUSED(x) (void)(x)
-
-void
-die(const char *errstr, ...)
-{
-    va_list ap;
-
-    va_start(ap, errstr);
-    vfprintf(stderr, errstr, ap);
-    va_end(ap);
-    exit(1);
-}
-
-/* end: help macro & funcs */
+#include "utils.h"
 
 typedef struct Line {
     size_t      cap;
@@ -341,18 +325,15 @@ handle_events()
                     g_state.m = MODE_EDIT;
                     break;
 
-                /* make fs and close menu */
                 case 's': /* fallthrough */
                 case 'S':
                     g_state.m = MODE_EDIT;
                     break;
 
-                /* make fs and exit */
                 case 'y': /* fallthrough */
                 case 'Y':
                     return g_err = ERR_GOOD;
 
-                /* exit without making fs */
                 case 'n': /* fallthrough */
                 case 'N':
                     return g_err = ERR_GOOD;
