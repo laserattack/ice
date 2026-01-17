@@ -300,6 +300,7 @@ draw_screen()
 static int
 valid_char(int ch)
 {
+    /* printable ascii symbols */
     return ch >= 32 && ch <= 126;
 }
 
