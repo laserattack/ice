@@ -11,7 +11,7 @@ TB_MAGENTA
 TB_CYAN
 TB_WHITE
 */
-#define ACCENT_COLOR TB_WHITE /* from termbox */
+#define ACCENT_COLOR TB_CYAN /* from termbox */
 #define TAB_WIDTH    4
 
 #endif
