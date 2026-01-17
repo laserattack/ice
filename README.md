@@ -1,13 +1,13 @@
 # Wtf?
 
-**ICE** - Interactive Command Editor
+**ICE** - Interactive Commands Editor
 
 ![demo](https://raw.githubusercontent.com/laserattack/ice/main/resources/demo.gif)
 
 # Usage
 
 ```
-ice - interactive command editor
+ice - interactive commands editor
 
 usage: ice [-h] [-e] [-c]
 

@@ -12,7 +12,7 @@
 
 #define SHELL_COMMAND "sh"
 
-#define HELP_TEXT "Ctrl+Q: exit | Ctrl+S: exec & exit | Esc/Ctrl+3: menu"
+#define HELP_TEXT "Ctrl+Q: exit | Ctrl+S: exit & exec | Esc/Ctrl+3: menu"
 static const char *g_menu[] = {
 ".--------------------------------------.",
 "|         Interactive Commands         |",
@@ -25,7 +25,7 @@ static const char *g_menu[] = {
 };
 
 static const char *g_usage =
-"ice - interactive command editor\n"
+"ice - interactive commands editor\n"
 "\n"
 "usage: ice [-h] [-e] [-c]\n"
 "\n"
