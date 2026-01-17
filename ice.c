@@ -212,9 +212,10 @@ draw_screen()
                 "|         Interactive Commands        |",
                 "|               Editor                |",
                 "|-------------------------------------|",
-                "|  e  execute commands                |",
-                "|  y  execute commands end exit       |",
-                "|  n  exit without execution          |",
+                "|  <esc>  close this menu             |",
+                "|  e      execute commands            |",
+                "|  y      execute commands end exit   |",
+                "|  n      exit without execution      |",
                 "'-------------------------------------'",
             };
 
