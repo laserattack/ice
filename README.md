@@ -2,6 +2,8 @@
 
 ICE - Interactive Command Editor
 
+[![asciicast](https://asciinema.org/a/6gjIphrp1fJROdcY.svg)](https://asciinema.org/a/6gjIphrp1fJROdcY)
+
 # Usage
 
 ```
