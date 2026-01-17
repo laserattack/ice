@@ -214,7 +214,7 @@ draw_screen()
                 "|               Editor                |",
                 "|-------------------------------------|",
                 "|  <esc>  close this menu             |",
-                "|  y      exit and exicute commands   |",
+                "|  y      exit and execute commands   |",
                 "|  n      exit without execution      |",
                 "'-------------------------------------'",
             };
