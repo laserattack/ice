@@ -65,7 +65,7 @@ draw_screen()
     case MODE_MENU:
         {
             size_t i, lc;
-            char *menu[] = {
+            char   *menu[] = {
                 ".-------------------------------------.",
                 "|         Interactive Commands        |",
                 "|               Editor                |",
