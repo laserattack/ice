@@ -109,7 +109,7 @@ draw_screen()
 
                 if (l == g_state.cl) {
                     for (x = hshift; x < l->len; x++) {
-                        uint32_t fg = TB_DEFAULT, bg = TB_DEFAULT;
+                        uintattr_t fg = TB_DEFAULT, bg = TB_DEFAULT;
 
                         if (x == g_state.cp) {
                             fg = TB_BLACK;
