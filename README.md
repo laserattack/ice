@@ -43,4 +43,4 @@ edit mode controls:
 
 # Deps
 
-- termbox2
+- termbox2 (https://github.com/termbox/termbox2)
