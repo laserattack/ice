@@ -1,8 +1,10 @@
-# Demo
+# Interactive Command Editor
+
+## Demo
 
 coming soon...
 
-# Usage
+## Usage
 
 ```
 ice - interactive command editor
