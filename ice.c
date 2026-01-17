@@ -209,7 +209,7 @@ draw_screen()
             size_t i, lc;
             char *menu[] = {
                 ".-------------------------------------.",
-                "|         Interactive Command         |",
+                "|         Interactive Commands        |",
                 "|               Editor                |",
                 "|-------------------------------------|",
                 "|  e  execute commands                |",
