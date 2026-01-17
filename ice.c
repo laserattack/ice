@@ -577,13 +577,8 @@ print_err()
 static void
 tui_loop()
 {
-    /* init termbox and app state */
+    /* init termbox */
     tb_init();
-    g_state.m     = MODE_EDIT;
-    g_state.lines = linelist_create();
-    linelist_append(g_state.lines, "");
-    g_state.cl = g_state.lines->head;
-    g_state.cp = 0;
 
     draw_screen();
     /* main loop */
@@ -594,16 +589,24 @@ tui_loop()
 
     /* cleanup */
     tb_shutdown();
-
-    linelist_print(g_state.lines, stdout);
-
-    linelist_free(g_state.lines);
-    print_err();
 }
 
 int
 main()
 {
+    g_state.m     = MODE_EDIT;
+    g_state.lines = linelist_create();
+    linelist_append(g_state.lines, "");
+    g_state.cl = g_state.lines->head;
+    g_state.cp = 0;
+
     tui_loop();
+
+    linelist_print(g_state.lines, stdout);
+
+    /* cleanup */
+    linelist_free(g_state.lines);
+
+    print_err();
     return 0;
 }
