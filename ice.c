@@ -66,14 +66,14 @@ draw_screen()
         {
             size_t i, lc;
             char   *menu[] = {
-                ".-------------------------------------.",
-                "|         Interactive Commands        |",
-                "|               Editor                |",
-                "|-------------------------------------|",
-                "|  <esc>  close this menu             |",
-                "|  y      exit and execute commands   |",
-                "|  n      exit without execution      |",
-                "'-------------------------------------'",
+                ".--------------------------------------.",
+                "|         Interactive Commands         |",
+                "|                Editor                |",
+                "|--------------------------------------|",
+                "|  esc/ctrl+3  close this menu         |",
+                "|  y           exit and execute        |",
+                "|  n           exit without execution  |",
+                "'--------------------------------------'",
             };
 
             lc = sizeof(menu)/sizeof(*menu);
@@ -148,7 +148,7 @@ draw_screen()
     for (x = 0; x < tw; ++x)
         tb_set_cell(x, th-1, ' ', TB_DEFAULT, TB_DEFAULT);
     tb_printf(0, th-1, TB_BLACK, ACCENT_COLOR,
-            "Esc: menu, Run with flag -h: help");
+            "Esc/Ctrl+3: menu, Run with flag -h: help");
 
     /* draw screen */
     tb_present();
