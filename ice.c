@@ -440,6 +440,10 @@ execute_commands()
  * show exit code flag
  * print commands flag
  * */
+
+/* TODO:
+ * bc
+ * */
 int
 main()
 {
