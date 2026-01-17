@@ -2,7 +2,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 
-#include "utils.h"
+#include "common.h"
 
 void
 die(const char *errstr, ...)

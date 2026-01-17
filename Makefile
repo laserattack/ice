@@ -7,7 +7,7 @@ VALGRIND     = valgrind
 VFLAGS       = --leak-check=full --show-leak-kinds=all --track-origins=yes
 
 TARGET       = ice
-SOURCES      = ice.c utils.c
+SOURCES      = ice.c linelist.c common.c
 OBJECTS      = $(SOURCES:.c=.o)
 DEPS         = $(SOURCES:.c=.d)
 

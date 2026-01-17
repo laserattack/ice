@@ -6,23 +6,11 @@
 #include <stdlib.h>
 
 #define TB_IMPL
-#include "termbox2.h"
+#include "thirdparty/termbox2.h"
 
 #include "config.h"
-#include "utils.h"
-
-typedef struct Line {
-    size_t      cap;
-    size_t      len;
-    char        *buf;
-    struct Line *prev;
-    struct Line *next;
-} Line;
-
-typedef struct {
-    Line *head;
-    Line *tail;
-} LineList;
+#include "common.h"
+#include "linelist.h"
 
 typedef enum {
     MODE_EDIT = 1,
@@ -44,152 +32,21 @@ typedef enum {
 static State g_state = {};
 static Error g_err   = 0;
 
-static Line *
-line_create(const char *text)
+static void
+state_init()
 {
-    Line *node;
-
-    if (!(node = malloc(sizeof(Line))))
-        die("line alloc err\n");
-
-    node->len = text? strlen(text): 0;
-    node->cap = node->len + 16;
-    if (!(node->buf = malloc(node->cap)))
-        die("line buf alloc err\n");
-
-    if (text)
-        strcpy(node->buf, text);
-    else
-        node->buf[0] = 0;
-
-    node->prev = NULL;
-    node->next = NULL;
-
-    return node;
+    g_state.m               = MODE_EDIT;
+    g_state.lines           = linelist_create();
+    linelist_append(g_state.lines, "");
+    g_state.cl              = g_state.lines->head;
+    g_state.cp              = 0;
+    g_state.execute_on_exit = 0;
 }
 
 static void
-line_free(Line *node)
+state_cleanup()
 {
-    if (!node) return;
-    free(node->buf);
-    free(node);
-}
-
-static LineList *
-linelist_create(void)
-{
-    LineList *list = malloc(sizeof(LineList));
-    if (!list)
-        die("linelist alloc err\n");
-
-    list->head = list->tail = NULL;
-    return list;
-}
-
-static void
-linelist_free(LineList *list)
-{
-    Line *node;
-    if (!list) return;
-
-    node = list->head;
-    while (node) {
-        Line *next = node->next;
-        line_free(node);
-        node = next;
-    }
-
-    free(list);
-}
-
-static void
-linelist_append(LineList *list, const char *text)
-{
-    Line *node = line_create(text);
-
-    if (!list->head) {
-        list->head = list->tail = node;
-    } else {
-        list->tail->next = node;
-        node->prev       = list->tail;
-        list->tail       = node;
-    }
-}
-
-static void
-linelist_remove(LineList *list, Line *node)
-{
-    if (!list || !node) return;
-
-    if (node->prev)
-        node->prev->next = node->next;
-    else
-        list->head = node->next;
-
-    if (node->next)
-        node->next->prev = node->prev;
-    else
-        list->tail = node->prev;
-
-    line_free(node);
-}
-
-static Line *
-linelist_insert_after(
-        LineList   *list,
-        Line       *after,
-        const char *text)
-{
-    Line *newline;
-    if (!list || !after) return NULL;
-
-    newline       = line_create(text);
-    newline->prev = after;
-    newline->next = after->next;
-
-    if (after->next)
-        after->next->prev = newline;
-    else
-        list->tail = newline;
-
-    after->next = newline;
-
-    return newline;
-}
-
-// start: travers funcs
-
-static void
-linelist_traverse(
-        LineList *list,
-        void     (*cb)(Line *, void *),
-        void     *ctx)
-{
-    Line *cur;
-
-    if (!list) return;
-
-    cur = list->head;
-    while (cur) {
-        cb(cur, ctx);
-        cur = cur->next;
-    }
-}
-
-static void
-linelist_cb_print(Line *line, void *ctx)
-{
-    FILE *output = (FILE *)ctx;
-    fprintf(output, "%s\n", line->buf);
-}
-
-// end: traverse funcs
-
-static void
-linelist_print(LineList *list, FILE *output)
-{
-    linelist_traverse(list, linelist_cb_print, output);
+    linelist_free(g_state.lines);
 }
 
 static void
@@ -559,23 +416,6 @@ handle_events()
     }
 
     return 0;
-}
-
-static void
-state_init()
-{
-    g_state.m               = MODE_EDIT;
-    g_state.lines           = linelist_create();
-    linelist_append(g_state.lines, "");
-    g_state.cl              = g_state.lines->head;
-    g_state.cp              = 0;
-    g_state.execute_on_exit = 0;
-}
-
-static void
-state_cleanup()
-{
-    linelist_free(g_state.lines);
 }
 
 static void
