@@ -171,7 +171,10 @@ handle_events()
     switch (ev.type) {
     case TB_EVENT_KEY:
         switch(ev.key) {
-        case TB_KEY_CTRL_C:
+        case TB_KEY_CTRL_C: /* fallthrough */
+        case TB_KEY_CTRL_Q: /* fallthrough */
+        case TB_KEY_CTRL_X: /* fallthrough */
+        case TB_KEY_CTRL_D:
             return g_err = ERR_GOOD;
         }
     }
