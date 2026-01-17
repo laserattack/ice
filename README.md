@@ -44,3 +44,4 @@ edit mode controls:
 # Deps
 
 - termbox2 (https://github.com/termbox/termbox2)
+- simple args parser from st (https://git.suckless.org/st/)
