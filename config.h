@@ -11,7 +11,9 @@ TB_MAGENTA
 TB_CYAN
 TB_WHITE
 */
-#define ACCENT_COLOR TB_CYAN /* from termbox */
-#define TAB_WIDTH    4
+#define ACCENT_COLOR  TB_CYAN
+#define TAB_WIDTH     4
+
+#define SHELL_COMMAND "sh"
 
 #endif

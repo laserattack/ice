@@ -435,13 +435,13 @@ tui_loop()
 static int
 execute_commands()
 {
-    FILE *bash;
+    FILE *sh;
 
-    if (!(bash = popen("bash", "w")))
+    if (!(sh = popen(SHELL_COMMAND, "w")))
         die("open bash error\n");
 
-    linelist_print(g_state.lines, bash);
-    return pclose(bash);
+    linelist_print(g_state.lines, sh);
+    return pclose(sh);
 }
 
 int
