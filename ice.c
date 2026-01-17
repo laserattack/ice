@@ -213,7 +213,7 @@ draw_screen()
                 "|               Editor                |",
                 "|-------------------------------------|",
                 "|  e  execute commands                |",
-                "|  y  save & execute                  |",
+                "|  y  execute commands end exit       |",
                 "|  n  exit without execution          |",
                 "'-------------------------------------'",
             };
