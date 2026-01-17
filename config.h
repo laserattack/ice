@@ -2,16 +2,12 @@
 #define CONFIG_H
 
 /*
-TB_BLACK
-TB_RED
-TB_GREEN
-TB_YELLOW
-TB_BLUE
-TB_MAGENTA
-TB_CYAN
-TB_WHITE
-*/
-#define ACCENT_COLOR  TB_CYAN
+ * Colors (from termbox)
+ * TB_BLACK, TB_RED, TB_GREEN, TB_YELLOW
+ * TB_BLUE, TB_MAGENTA, TB_CYAN, TB_WHITE
+ */
+#define ACCENT_COLOR     TB_CYAN
+
 #define TAB_WIDTH     4
 
 #define SHELL_COMMAND "sh"

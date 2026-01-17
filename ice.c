@@ -435,17 +435,26 @@ execute_commands()
     return pclose(sh);
 }
 
+/* TODO:
+ * -h flag (see description)
+ * show exit code flag
+ * print commands flag
+ * */
 int
 main()
 {
+    int exitcode = 0;
+
     state_init();
 
     tui_loop();
 
     if (g_state.execute_on_exit)
-        execute_commands();
+        exitcode = execute_commands();
 
     print_err();
+
+    UNUSED(exitcode);
 
     state_cleanup();
     return 0;
