@@ -45,17 +45,14 @@ static void
 draw_screen()
 {
     /* terminal size */
-    size_t tw = tb_width();
-    size_t th = tb_height();
-    size_t x  = 0, y = 0;
+    size_t th     = tb_height(), tw = tb_width();
+    Line   *l     = g_state.lines->head;
+    size_t vshift = 0, hshift = 0;
+    size_t x      = 0, y = 0;
+    size_t line   = 0;
 
     /* clear screen */
     tb_clear();
-
-    /* prepare screen output */
-    Line   *l     = g_state.lines->head;
-    size_t line   = 0;
-    size_t vshift = 0, hshift = 0;
 
     /* calculate vertical shift for scrolling */
     for (;l != g_state.cl;line++,l=l->next);
