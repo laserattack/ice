@@ -371,8 +371,10 @@ main(int argc, char *argv[])
 
     tui_loop();
 
-    if (flag_print_commands)
+    if (flag_print_commands) {
+        printf("commands:\n");
         linelist_print(g_state.lines, stdout);
+    }
 
     if (g_state.execute_on_exit)
         exitcode = execute_commands();
