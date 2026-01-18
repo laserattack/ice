@@ -116,10 +116,11 @@ handle_events()
     struct tb_event ev;
     tb_poll_event(&ev);
 
-    /* all modes events */
+    /* edit mode events */
     switch (ev.type) {
     case TB_EVENT_KEY:
-        switch(ev.key) {
+        switch (ev.key) {
+        /* exit */
         case TB_KEY_CTRL_C: /* fallthrough */
         case KEY_EXIT:
             return 1;
@@ -127,13 +128,7 @@ handle_events()
         case KEY_EXIT_EXECUTE:
             g_state.execute_on_exit = 1;
             return 1;
-        }
-    }
 
-    /* edit mode events */
-    switch (ev.type) {
-    case TB_EVENT_KEY:
-        switch (ev.key) {
         /* delete left symbol */
         case TB_KEY_BACKSPACE:  /* fallthrough */
         case TB_KEY_BACKSPACE2: /* fallthrough */
