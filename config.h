@@ -10,7 +10,7 @@
 
 #define TAB_WIDTH 4
 
-#define SHELL_COMMAND "sh"
+#define SHELL_COMMAND "bash"
 
 #define HELP_TEXT "Ctrl+Q: exit, Ctrl+S: exit & exec"
 
@@ -50,5 +50,7 @@ static const char *g_usage =
 #define KEY_EXIT TB_KEY_CTRL_Q
 
 #define KEY_EXIT_EXECUTE TB_KEY_CTRL_S
+
+#define AUTOCOMPLETETION_SOURCE "bash -c 'compgen -c \"%s\"' 2>/dev/null"
 
 #endif

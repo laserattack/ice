@@ -17,13 +17,107 @@ char *argv0;
 #include "linelist.h"
 
 typedef struct {
-    LineList *lines;          /* lines list               */
-    Line     *cl;             /* current line             */
-    size_t   cp;              /* current position in line */
-    int      execute_on_exit; /* 1 or 0 */
+    char     *word;
+    size_t   wordpos;
+    size_t   wordlen;
+    LineList *completions;
+    Line     *next_completion;
+} Autocompletion;
+
+typedef struct {
+    LineList       *lines;          /* lines list               */
+    Line           *cl;             /* current line             */
+    size_t         cp;              /* current position in line */
+    int            execute_on_exit; /* 1 or 0 */
+
+    int            auc_enabled;     /* 1 or 0 */
+    Autocompletion *auc;
 } State;
 
 static State g_state = {};
+
+static void
+autocompletion_setup()
+{
+    size_t         ws               = g_state.cp, we = g_state.cp;
+    char           *word            = NULL, *cmd = NULL;
+    LineList       *completions     = NULL;
+    Line           *next_completion = NULL;
+    Autocompletion *auc             = NULL;
+    FILE           *compgen         = NULL;
+    size_t         wordlen;
+    char           line[256];
+
+    /* find current word start pos and wordlen */
+    while (ws > 0 && g_state.cl->buf[ws-1] != ' ') ws--;
+    while (we < g_state.cl->len && g_state.cl->buf[we] != ' ') we++;
+    wordlen = we-ws;
+
+    /* get completions list if wordlen ne zero */
+    if (wordlen) {
+        if (!(word = strndup(&g_state.cl->buf[ws], wordlen)))
+            die("autocompletion word alloc err\n");
+
+        /* open compgen */
+        if (asprintf(&cmd,
+                     AUTOCOMPLETETION_SOURCE,
+                     word) == -1)
+            die("autocompletion compgen command alloc err\n");
+
+        if (!(compgen = popen(cmd, "r")))
+            die("compgen open pipe error\n");
+        free(cmd);
+
+        /* fill completions list */
+        completions = linelist_create();
+        while (fgets(line, sizeof(line), compgen)) {
+            line[strcspn(line, "\n")] = 0;
+            if (line[0])
+                linelist_append(completions, line);
+        }
+        next_completion = completions->head;
+
+        pclose(compgen);
+    }
+
+    if (!(auc = malloc(sizeof(Autocompletion))))
+        die("autocompletion struct alloc arr\n");
+
+    *auc = (Autocompletion){
+        .wordpos         = ws,
+        .word            = word,
+        .wordlen         = wordlen,
+        .completions     = completions,
+        .next_completion = next_completion,
+    };
+
+    g_state.auc = auc;
+}
+
+static void
+autocompletion_clear()
+{
+    if (!g_state.auc) return;
+
+    free(g_state.auc->word);
+    linelist_free(g_state.auc->completions);
+
+    *g_state.auc = (Autocompletion){
+        .word            = NULL,
+        .completions     = NULL,
+        .next_completion = NULL,
+    };
+
+    free(g_state.auc);
+    g_state.auc = NULL;
+}
+
+static void
+autocompletion_update()
+{
+    autocompletion_clear();
+    autocompletion_setup();
+}
 
 static void
 state_init()
@@ -33,12 +127,14 @@ state_init()
     g_state.cl              = g_state.lines->head;
     g_state.cp              = 0;
     g_state.execute_on_exit = 0;
+    g_state.auc_enabled     = 0;
 }
 
 static void
 state_cleanup()
 {
     linelist_free(g_state.lines);
+    autocompletion_clear();
 }
 
 static void
@@ -96,6 +192,10 @@ draw_screen()
         tb_set_cell(x, th-1, ' ', TB_DEFAULT, TB_DEFAULT);
     tb_printf(0, th-1, ACCENT_COLOR, TB_DEFAULT, HELP_TEXT);
 
+    if (g_state.auc && g_state.auc->next_completion)
+        tb_printf(0, th-2, ACCENT_COLOR, TB_DEFAULT,
+            "autocompl: %s", g_state.auc->next_completion->buf);
+
     /* draw screen */
     tb_present();
 }
@@ -113,6 +213,9 @@ handle_events()
     struct tb_event ev;
     tb_poll_event(&ev);
 
+    if (g_state.auc_enabled)
+        autocompletion_update();
+
     /* edit mode events */
     switch (ev.type) {
     case TB_EVENT_KEY:
@@ -125,6 +228,16 @@ handle_events()
         case KEY_EXIT_EXECUTE:
             g_state.execute_on_exit = 1;
             return 1;
+
+        case TB_KEY_CTRL_A:
+            if (g_state.auc_enabled) {
+                g_state.auc_enabled = 0;
+                autocompletion_clear();
+            } else {
+                g_state.auc_enabled = 1;
+                autocompletion_update();
+            }
+            break;
 
         /* delete left symbol */
         case TB_KEY_BACKSPACE:  /* fallthrough */
