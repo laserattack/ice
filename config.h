@@ -12,17 +12,7 @@
 
 #define SHELL_COMMAND "sh"
 
-#define HELP_TEXT "Ctrl+Q: exit | Ctrl+S: exit & exec | Esc/Ctrl+3: menu"
-static const char *g_menu[] = {
-".--------------------------------------.",
-"|         Interactive Commands         |",
-"|                Editor                |",
-"|--------------------------------------|",
-"|  esc/q  close this menu              |",
-"|  y      exit & execute               |",
-"|  n      exit                         |",
-"'--------------------------------------'",
-};
+#define HELP_TEXT "Ctrl+Q: exit, Ctrl+S: exit & exec"
 
 static const char *g_usage =
 "ice - interactive commands editor\n"
@@ -44,12 +34,6 @@ static const char *g_usage =
 "global controls:\n"
 "   ctrl+c / ctrl+q          exit without execution\n"
 "   ctrl+s                   exit and execute commands\n"
-"   esc / ctrl+3             toggle menu\n"
-"\n"
-"menu options:\n"
-"   y/Y                      exit and execute commands\n"
-"   n/N                      exit without execution\n"
-"   q/Q / esc / ctrl+3       close menu\n"
 "\n"
 "edit mode controls:\n"
 "   arrow keys               navigate\n"
@@ -61,14 +45,10 @@ static const char *g_usage =
 "   any printable ascii      insert character\n"
 ;
 
-/* ctrl+c ctrl+c always works,
+/* ctrl+c always works,
  * this line is an additional exit key */
 #define KEY_EXIT TB_KEY_CTRL_Q
 
 #define KEY_EXIT_EXECUTE TB_KEY_CTRL_S
-
-/* only esc clash with ctrl+3
- * */
-#define KEY_MENU_TOGGLE TB_KEY_ESC
 
 #endif

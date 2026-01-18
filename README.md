@@ -26,12 +26,6 @@ description:
 global controls:
     ctrl+c / ctrl+q          exit without execution
     ctrl+s                   exit and execute commands
-    esc / ctrl+3             toggle menu
-
-menu options:
-    y/Y                      exit and execute commands
-    n/N                      exit without execution
-    q/Q / esc / ctrl+3       close menu
 
 edit mode controls:
     arrow keys               navigate
