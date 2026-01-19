@@ -3,14 +3,14 @@
 #include "string.h"
 
 #include "common.h"
-#include "linelist.h"
+#include "command.h"
 
-static Line *
+static Cmd *
 line_create(const char *text)
 {
-    Line *node;
+    Cmd *node;
 
-    if (!(node = malloc(sizeof(Line))))
+    if (!(node = malloc(sizeof(Cmd))))
         die("line alloc err\n");
 
     node->len = text? strlen(text): 0;
@@ -30,33 +30,33 @@ line_create(const char *text)
 }
 
 static void
-line_free(Line *node)
+line_free(Cmd *node)
 {
     if (!node) return;
     free(node->buf);
     free(node);
 }
 
-LineList *
-linelist_create(void)
+CmdList *
+cmdlist_create(void)
 {
-    LineList *list = malloc(sizeof(LineList));
+    CmdList *list = malloc(sizeof(CmdList));
     if (!list)
-        die("linelist alloc err\n");
+        die("cmdlist alloc err\n");
 
     list->head = list->tail = NULL;
     return list;
 }
 
 void
-linelist_free(LineList *list)
+cmdlist_free(CmdList *list)
 {
-    Line *node;
+    Cmd *node;
     if (!list) return;
 
     node = list->head;
     while (node) {
-        Line *next = node->next;
+        Cmd *next = node->next;
         line_free(node);
         node = next;
     }
@@ -65,9 +65,9 @@ linelist_free(LineList *list)
 }
 
 void
-linelist_append(LineList *list, const char *text)
+cmdlist_append(CmdList *list, const char *text)
 {
-    Line *node = line_create(text);
+    Cmd *node = line_create(text);
 
     if (!list->head) {
         list->head = list->tail = node;
@@ -79,7 +79,7 @@ linelist_append(LineList *list, const char *text)
 }
 
 void
-linelist_remove(LineList *list, Line *node)
+cmdlist_remove(CmdList *list, Cmd *node)
 {
     if (!list || !node) return;
 
@@ -96,13 +96,13 @@ linelist_remove(LineList *list, Line *node)
     line_free(node);
 }
 
-Line *
-linelist_insert_after(
-        LineList   *list,
-        Line       *after,
+Cmd *
+cmdlist_insert_after(
+        CmdList    *list,
+        Cmd        *after,
         const char *text)
 {
-    Line *newline;
+    Cmd *newline;
     if (!list || !after) return NULL;
 
     newline       = line_create(text);
@@ -122,12 +122,12 @@ linelist_insert_after(
 // start: travers funcs
 
 static void
-linelist_traverse(
-        LineList *list,
-        void     (*cb)(Line *, void *),
-        void     *ctx)
+cmdlist_traverse(
+        CmdList *list,
+        void    (*cb)(Cmd *, void *),
+        void    *ctx)
 {
-    Line *cur;
+    Cmd *cur;
 
     if (!list) return;
 
@@ -139,7 +139,7 @@ linelist_traverse(
 }
 
 static void
-linelist_cb_print(Line *line, void *ctx)
+cmdlist_cb_print(Cmd *line, void *ctx)
 {
     FILE *output = (FILE *)ctx;
     fprintf(output, "%s\n", line->buf);
@@ -148,7 +148,7 @@ linelist_cb_print(Line *line, void *ctx)
 // end: traverse funcs
 
 void
-linelist_print(LineList *list, FILE *output)
+cmdlist_print(CmdList *list, FILE *output)
 {
-    linelist_traverse(list, linelist_cb_print, output);
+    cmdlist_traverse(list, cmdlist_cb_print, output);
 }
