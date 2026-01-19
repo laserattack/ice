@@ -13,8 +13,9 @@ line_create(const char *text)
     if (!(node = malloc(sizeof(Line))))
         die("line alloc err\n");
 
-    node->len = text? strlen(text): 0;
-    node->cap = node->len + 16;
+    node->selected = 0;
+    node->len      = text? strlen(text): 0;
+    node->cap      = node->len + 16;
     if (!(node->buf = malloc(node->cap)))
         die("line buf alloc err\n");
 
@@ -22,6 +23,7 @@ line_create(const char *text)
         strcpy(node->buf, text);
     else
         node->buf[0] = 0;
+
 
     node->prev = NULL;
     node->next = NULL;

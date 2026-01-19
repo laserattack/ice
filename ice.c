@@ -66,12 +66,19 @@ draw_screen()
     l = g_state.lines->head;
 
     for (;l;l=l->next,y++) {
+        uintattr_t fg = TB_DEFAULT, bg = TB_DEFAULT;
 
         if (y < vshift) continue;
 
         if (l == g_state.cl) {
+            /* current line */
             for (x = hshift; x < l->len; x++) {
-                uintattr_t fg = TB_DEFAULT, bg = TB_DEFAULT;
+
+                /* selection */
+                if (l->selected) {
+                    fg = TB_BLACK;
+                    bg = TB_WHITE;
+                }
 
                 if (x == g_state.cp) {
                     fg = TB_BLACK;
@@ -79,22 +86,30 @@ draw_screen()
                 }
 
                 tb_set_cell(x-hshift, y-vshift, l->buf[x], fg, bg);
+
+                fg = TB_DEFAULT;
+                bg = TB_DEFAULT;
             }
 
             if (g_state.cp == l->len)
                 tb_set_cell(l->len-hshift, y-vshift, ' ',
                         TB_BLACK, ACCENT_COLOR);
         } else {
-            for (x = hshift; x < l->len; x++)
-                tb_set_cell(x-hshift, y-vshift, l->buf[x],
-                        TB_DEFAULT, TB_DEFAULT);
+            /* other lines */
+            if (l->selected) {
+                fg = TB_BLACK;
+                bg = TB_WHITE;
+            }
+            for (x = hshift; x < l->len; x++) {
+                tb_set_cell(x-hshift, y-vshift, l->buf[x], fg, bg);
+            }
         }
     }
 
     /* print msgline */
     for (x = 0; x < tw; ++x)
         tb_set_cell(x, th-1, ' ', TB_DEFAULT, TB_DEFAULT);
-    tb_printf(0, th-1, ACCENT_COLOR, TB_DEFAULT, HELP_TEXT);
+    tb_printf(0, th-1, ACCENT_COLOR | TB_BOLD, TB_DEFAULT, HELP_TEXT);
 
     /* draw screen */
     tb_present();
@@ -125,6 +140,10 @@ handle_events()
         case KEY_EXIT_EXECUTE:
             g_state.execute_on_exit = 1;
             return 1;
+
+        case KEY_SELECT_LINE:
+            g_state.cl->selected = (g_state.cl->selected+1)%2;
+            break;
 
         /* delete left symbol */
         case TB_KEY_BACKSPACE:  /* fallthrough */
@@ -216,6 +235,14 @@ handle_events()
                         g_state.lines,
                         cur,
                         after_cursor);
+
+                /* move selection logic */
+                if (cur->selected) {
+                    if (g_state.cp != cur->len)
+                        cur->selected = 0;
+                    if (!g_state.cp && cur->len)
+                        newline->selected = 1;
+                }
 
                 cur->buf[g_state.cp] = 0;
                 cur->len             = g_state.cp;
@@ -325,11 +352,15 @@ tui_loop()
 }
 
 static int
-execute_commands()
+execute_commands(int flag_no_commands_output)
 {
     FILE *sh;
 
-    if (!(sh = popen(SHELL_COMMAND, "w")))
+    sh = flag_no_commands_output
+        ? popen(SHELL_COMMAND" >/dev/null 2>&1", "w")
+        : popen(SHELL_COMMAND, "w");
+
+    if (!sh)
         die("open shell error\n");
 
     linelist_print(g_state.lines, sh);
@@ -340,9 +371,10 @@ int
 main(int argc, char *argv[])
 {
     int exitcode = 0;
-    
-    int flag_show_exitcode  = 0;
-    int flag_print_commands = 0;
+
+    int flag_show_exitcode      = 0;
+    int flag_print_commands     = 0;
+    int flag_no_commands_output = 0;
 
     ARGBEGIN {
         case 'h':
@@ -354,6 +386,9 @@ main(int argc, char *argv[])
         case 'c':
             flag_print_commands = 1;
             break;
+        case 'n':
+            flag_no_commands_output = 1;
+            break;
         default:
             printf(g_usage);
             die("\nunknown flag '%c'\n", ARGC());
@@ -364,15 +399,14 @@ main(int argc, char *argv[])
     tui_loop();
 
     if (flag_print_commands) {
-        printf("commands:\n");
         linelist_print(g_state.lines, stdout);
     }
 
     if (g_state.execute_on_exit)
-        exitcode = execute_commands();
+        exitcode = execute_commands(flag_no_commands_output);
 
     if (flag_show_exitcode)
-        printf("exitcode %d\n", exitcode);
+        printf("%d\n", exitcode);
 
     state_cleanup();
     return 0;

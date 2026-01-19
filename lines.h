@@ -5,6 +5,7 @@ typedef struct Line {
     size_t      cap;
     size_t      len;
     char        *buf;
+    int         selected;
     struct Line *prev;
     struct Line *next;
 } Line;

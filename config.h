@@ -12,30 +12,34 @@
 
 #define SHELL_COMMAND "sh"
 
-#define HELP_TEXT "Ctrl+Q: exit, Ctrl+S: exit & exec"
+#define HELP_TEXT "Ctrl+Q: exit, run with -h: help"
 
 static const char *g_usage =
 "ice - interactive commands editor\n"
 "\n"
-"usage: ice [-h] [-e] [-c]\n"
+"usage: ice [-h] [-e] [-c] [-n]\n"
 "\n"
 "flags:\n"
 "   -h  show this help and exit\n"
 "   -e  show exit code after execution\n"
-"   -c  print commands before execution\n"
+"   -c  print lines on exit\n"
+"   -n  do not print commands output\n"
+"flags can be combined: -ec, -nc, -ecn, etc.\n"
 "\n"
 "description:\n"
 "   ice is a TUI editor for interactive command composition.\n"
 "   edit commands in a familiar editor interface, then execute\n"
-"   them as a bash script.\n"
+"   them as a bash script\n"
 "\n"
-"   also you can edit config.h to change some default settings.\n"
+"   also you can edit config.h to change some default settings\n"
 "\n"
-"global controls:\n"
+"action controls:\n"
 "   ctrl+c / ctrl+q          exit without execution\n"
-"   ctrl+s                   exit and execute commands\n"
+"   ctrl+e                   exit and execute\n"
+"   ctrl+s                   select line\n"
+"   ctrl+x                   execute selected lines\n"
 "\n"
-"edit mode controls:\n"
+"edit controls:\n"
 "   arrow keys               navigate\n"
 "   ctrl + left/right        jump by word\n"
 "   ctrl+w / ctrl+backspace  delete left word\n"
@@ -48,7 +52,8 @@ static const char *g_usage =
 /* ctrl+c always works,
  * this line is an additional exit key */
 #define KEY_EXIT TB_KEY_CTRL_Q
+#define KEY_EXIT_EXECUTE TB_KEY_CTRL_E
 
-#define KEY_EXIT_EXECUTE TB_KEY_CTRL_S
+#define KEY_SELECT_LINE TB_KEY_CTRL_S
 
 #endif
