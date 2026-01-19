@@ -1,5 +1,5 @@
-#ifndef LINELIST_H
-#define LINELIST_H
+#ifndef LINES_H
+#define LINES_H
 
 typedef struct Line {
     size_t      cap;

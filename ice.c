@@ -14,7 +14,7 @@ char *argv0;
 
 #include "config.h"
 #include "common.h"
-#include "linelist.h"
+#include "lines.h"
 
 typedef struct {
     LineList *lines;          /* lines list               */

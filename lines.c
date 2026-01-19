@@ -3,7 +3,7 @@
 #include "string.h"
 
 #include "common.h"
-#include "linelist.h"
+#include "lines.h"
 
 static Line *
 line_create(const char *text)

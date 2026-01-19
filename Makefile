@@ -10,7 +10,7 @@ CLOC     = cloc
 CLFLAGS  = --exclude-dir=thirdparty
 
 TARGET   = ice
-SOURCES  = ice.c linelist.c common.c
+SOURCES  = ice.c lines.c common.c
 OBJECTS  = $(SOURCES:.c=.o)
 DEPS     = $(SOURCES:.c=.d)
 
