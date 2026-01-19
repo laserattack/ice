@@ -14,13 +14,13 @@ char *argv0;
 
 #include "config.h"
 #include "common.h"
-#include "command.h"
+#include "linelist.h"
 
 typedef struct {
-    CmdList *cmds;           /* commands list            */
-    Cmd     *cl;             /* current line             */
-    size_t  cp;              /* current position in line */
-    int     execute_on_exit; /* 1 or 0 */
+    LineList *lines;          /* lines list               */
+    Line     *cl;             /* current line             */
+    size_t   cp;              /* current position in line */
+    int      execute_on_exit; /* 1 or 0 */
 } State;
 
 static State g_state = {};
@@ -28,9 +28,9 @@ static State g_state = {};
 static void
 state_init()
 {
-    g_state.cmds            = cmdlist_create();
-    cmdlist_append(g_state.cmds, "");
-    g_state.cl              = g_state.cmds->head;
+    g_state.lines           = linelist_create();
+    linelist_append(g_state.lines, "");
+    g_state.cl              = g_state.lines->head;
     g_state.cp              = 0;
     g_state.execute_on_exit = 0;
 }
@@ -38,7 +38,7 @@ state_init()
 static void
 state_cleanup()
 {
-    cmdlist_free(g_state.cmds);
+    linelist_free(g_state.lines);
 }
 
 static void
@@ -46,7 +46,7 @@ draw_screen()
 {
     /* terminal size */
     size_t th     = tb_height(), tw = tb_width();
-    Cmd   *l      = g_state.cmds->head;
+    Line   *l     = g_state.lines->head;
     size_t vshift = 0, hshift = 0;
     size_t x      = 0, y = 0;
     size_t line   = 0;
@@ -63,7 +63,7 @@ draw_screen()
     if (g_state.cp > tw - 1)
         hshift = g_state.cp - tw + 1;
 
-    l = g_state.cmds->head;
+    l = g_state.lines->head;
 
     for (;l;l=l->next,y++) {
 
@@ -132,7 +132,7 @@ handle_events()
         /* delete left word (clash with ctrl+backspace) */
         case TB_KEY_CTRL_W:
             {
-                Cmd *cur = g_state.cl;
+                Line *cur = g_state.cl;
 
                 if (g_state.cp > 0) {
                     if (ev.key == TB_KEY_CTRL_W) {
@@ -161,7 +161,7 @@ handle_events()
                     }
                 } else if (cur->prev) {
                     /* merge lines case */
-                    Cmd    *prev  = cur->prev;
+                    Line   *prev  = cur->prev;
                     size_t newlen = prev->len + cur->len;
 
                     if (newlen+1 >= prev->cap) {
@@ -178,7 +178,7 @@ handle_events()
                     g_state.cl = prev;
                     g_state.cp = prev->len-cur->len;
 
-                    cmdlist_remove(g_state.cmds, cur);
+                    linelist_remove(g_state.lines, cur);
                 }
 
                 break;
@@ -187,7 +187,7 @@ handle_events()
         /* insert TAB_WIDTH spaces on tab */
         case TB_KEY_TAB:
             {
-                Cmd *cur = g_state.cl;
+                Line *cur = g_state.cl;
 
                 if (cur->len + TAB_WIDTH >= cur->cap) {
                     cur->cap = (cur->len + TAB_WIDTH) * 2;
@@ -210,10 +210,10 @@ handle_events()
         /* move line */
         case TB_KEY_ENTER:
             {
-                Cmd  *cur          = g_state.cl;
+                Line *cur          = g_state.cl;
                 char *after_cursor = &cur->buf[g_state.cp];
-                Cmd  *newline      = cmdlist_insert_after(
-                        g_state.cmds,
+                Line *newline      = linelist_insert_after(
+                        g_state.lines,
                         cur,
                         after_cursor);
 
@@ -228,7 +228,7 @@ handle_events()
         case TB_KEY_ARROW_LEFT:
             if (g_state.cp > 0) {
                 if (ev.mod == TB_MOD_CTRL) {
-                    Cmd    *cur = g_state.cl;
+                    Line   *cur = g_state.cl;
                     size_t pos  = g_state.cp;
                     /* skip spaces */
                     while (pos && cur->buf[pos-1] == ' ') pos--;
@@ -247,7 +247,7 @@ handle_events()
         case TB_KEY_ARROW_RIGHT:
             if (g_state.cp < g_state.cl->len) {
                 if (ev.mod == TB_MOD_CTRL) {
-                    Cmd    *cur = g_state.cl;
+                    Line   *cur = g_state.cl;
                     size_t pos  = g_state.cp;
                     /* skip word */
                     while (pos < cur->len && cur->buf[pos] != ' ') pos++;
@@ -282,7 +282,7 @@ handle_events()
         default:
             /* insert symbol */
             if (valid_char(ev.ch)) {
-                Cmd *line = g_state.cl;
+                Line *line = g_state.cl;
 
                 if (line->len + 1 == line->cap) {
                     line->cap = (line->len + 1) * 2;
@@ -332,7 +332,7 @@ execute_commands()
     if (!(sh = popen(SHELL_COMMAND, "w")))
         die("open shell error\n");
 
-    cmdlist_print(g_state.cmds, sh);
+    linelist_print(g_state.lines, sh);
     return pclose(sh);
 }
 
@@ -340,7 +340,7 @@ int
 main(int argc, char *argv[])
 {
     int exitcode = 0;
-
+    
     int flag_show_exitcode  = 0;
     int flag_print_commands = 0;
 
@@ -365,7 +365,7 @@ main(int argc, char *argv[])
 
     if (flag_print_commands) {
         printf("commands:\n");
-        cmdlist_print(g_state.cmds, stdout);
+        linelist_print(g_state.lines, stdout);
     }
 
     if (g_state.execute_on_exit)
