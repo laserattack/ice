@@ -398,9 +398,8 @@ main(int argc, char *argv[])
 
     tui_loop();
 
-    if (flag_print_commands) {
+    if (flag_print_commands)
         linelist_print(g_state.lines, stdout);
-    }
 
     if (g_state.execute_on_exit)
         exitcode = execute_commands(flag_no_commands_output);
