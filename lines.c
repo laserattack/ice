@@ -123,8 +123,8 @@ linelist_insert_after(
 
 // start: travers funcs
 
-static void
-linelist_traverse(
+void
+linelist_foreach(
         LineList *list,
         void     (*cb)(Line *, void *),
         void     *ctx)
@@ -140,17 +140,17 @@ linelist_traverse(
     }
 }
 
-static void
+void
 linelist_cb_print(Line *line, void *ctx)
 {
     FILE *output = (FILE *)ctx;
     fprintf(output, "%s\n", line->buf);
 }
 
-// end: traverse funcs
-
 void
-linelist_print(LineList *list, FILE *output)
+linelist_cb_print_selected(Line *line, void *ctx)
 {
-    linelist_traverse(list, linelist_cb_print, output);
+    if (line->selected) linelist_cb_print(line, ctx);
 }
+
+// end: traverse funcs

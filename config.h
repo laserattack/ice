@@ -10,7 +10,7 @@
 
 #define TAB_WIDTH 4
 
-#define SHELL_COMMAND "sh"
+#define SHELL_COMMAND "bash"
 
 #define HELP_TEXT "Ctrl+Q: exit, run with -h: help"
 
@@ -34,10 +34,9 @@ static const char *g_usage =
 "   also you can edit config.h to change some default settings\n"
 "\n"
 "action controls:\n"
-"   ctrl+c / ctrl+q          exit without execution\n"
-"   ctrl+e                   exit and execute\n"
+"   ctrl+c / ctrl+q          exit\n"
+"   ctrl+e                   execute\n"
 "   ctrl+s                   select line\n"
-"   ctrl+x                   execute selected lines\n"
 "\n"
 "edit controls:\n"
 "   arrow keys               navigate\n"
@@ -52,7 +51,7 @@ static const char *g_usage =
 /* ctrl+c always works,
  * this line is an additional exit key */
 #define KEY_EXIT TB_KEY_CTRL_Q
-#define KEY_EXIT_EXECUTE TB_KEY_CTRL_E
+#define KEY_EXECUTE TB_KEY_CTRL_E
 
 #define KEY_SELECT_LINE TB_KEY_CTRL_S
 

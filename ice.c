@@ -20,10 +20,21 @@ typedef struct {
     LineList *lines;          /* lines list               */
     Line     *cl;             /* current line             */
     size_t   cp;              /* current position in line */
-    int      execute_on_exit; /* 1 or 0 */
 } State;
 
+typedef struct {
+    int show_exitcode;
+    int print_commands;
+    int no_commands_output;
+} Flags;
+
 static State g_state = {};
+
+static Flags g_flags = {
+    .show_exitcode      = 0,
+    .print_commands     = 0,
+    .no_commands_output = 0,
+};
 
 static void
 state_init()
@@ -32,13 +43,32 @@ state_init()
     linelist_append(g_state.lines, "");
     g_state.cl              = g_state.lines->head;
     g_state.cp              = 0;
-    g_state.execute_on_exit = 0;
 }
 
 static void
 state_cleanup()
 {
     linelist_free(g_state.lines);
+}
+
+static int
+execute_commands(int only_selected)
+{
+    FILE *sh;
+
+    sh = g_flags.no_commands_output
+        ? popen(SHELL_COMMAND" >/dev/null 2>&1", "w")
+        : popen(SHELL_COMMAND, "w");
+
+    if (!sh)
+        die("open shell error\n");
+
+    if (only_selected)
+        linelist_foreach(g_state.lines, linelist_cb_print_selected, sh);
+    else
+        linelist_foreach(g_state.lines, linelist_cb_print, sh);
+
+    return pclose(sh);
 }
 
 static void
@@ -137,12 +167,23 @@ handle_events()
         case KEY_EXIT:
             return 1;
 
-        case KEY_EXIT_EXECUTE:
-            g_state.execute_on_exit = 1;
-            return 1;
-
         case KEY_SELECT_LINE:
             g_state.cl->selected = (g_state.cl->selected+1)%2;
+            break;
+
+        case KEY_EXECUTE:
+            Line *l = g_state.lines->head;
+            int  only_selected = 0;
+
+            /* there are selected lines? */
+            for (;l;l=l->next) {
+                if (l->selected) {
+                    only_selected = 1;
+                    break;
+                }
+            }
+
+            execute_commands(only_selected);
             break;
 
         /* delete left symbol */
@@ -351,43 +392,27 @@ tui_loop()
     tb_shutdown();
 }
 
-static int
-execute_commands(int flag_no_commands_output)
-{
-    FILE *sh;
-
-    sh = flag_no_commands_output
-        ? popen(SHELL_COMMAND" >/dev/null 2>&1", "w")
-        : popen(SHELL_COMMAND, "w");
-
-    if (!sh)
-        die("open shell error\n");
-
-    linelist_print(g_state.lines, sh);
-    return pclose(sh);
-}
-
 int
 main(int argc, char *argv[])
 {
     int exitcode = 0;
 
-    int flag_show_exitcode      = 0;
-    int flag_print_commands     = 0;
-    int flag_no_commands_output = 0;
+    g_flags.show_exitcode      = 0;
+    g_flags.print_commands     = 0;
+    g_flags.no_commands_output = 0;
 
     ARGBEGIN {
         case 'h':
             die(g_usage);
             break;
         case 'e':
-            flag_show_exitcode = 1;
+            g_flags.show_exitcode = 1;
             break;
         case 'c':
-            flag_print_commands = 1;
+            g_flags.print_commands = 1;
             break;
         case 'n':
-            flag_no_commands_output = 1;
+            g_flags.no_commands_output = 1;
             break;
         default:
             printf(g_usage);
@@ -398,13 +423,10 @@ main(int argc, char *argv[])
 
     tui_loop();
 
-    if (flag_print_commands)
-        linelist_print(g_state.lines, stdout);
+    if (g_flags.print_commands)
+        linelist_foreach(g_state.lines, linelist_cb_print, stdout);
 
-    if (g_state.execute_on_exit)
-        exitcode = execute_commands(flag_no_commands_output);
-
-    if (flag_show_exitcode)
+    if (g_flags.show_exitcode)
         printf("%d\n", exitcode);
 
     state_cleanup();
